@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能时间计划表 | 高效管理您的时间</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="智能时间计划表 - 轻松管理您的时间，自动生成表格和甘特图，支持AI辅助输入">
+    
+    <!-- 加密库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- 星火API模块 -->
+    <script src="spark-api.js"></script>
+    <!-- html2canvas库用于截图功能 -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <i class='bx bx-time-five'></i> AI智能时间计划表
+                <span class="subtitle">高效管理您的时间</span>
+            </h1>
+        </header>
+        
+        <div id="inputArea" class="card">
+            <div class="input-tabs">
+                <button class="tab-btn active" data-tab="freeform-input">
+                    <i class='bx bx-edit'></i> 自由输入
+                </button>
+                <button class="tab-btn" data-tab="structured-input">
+                    <i class='bx bx-list-ul'></i> 结构化输入
+                </button>
+            </div>
+            
+            <div id="freeform-input" class="tab-content active">
+                <div class="ai-input-container">
+                    <textarea id="planInput" placeholder="输入时间计划（示例：周一 10:00-12:00 写代码）"></textarea>
+                    <button id="aiAssistBtn" class="ai-assist-btn" title="AI辅助输入">
+                        <i class='bx bx-bot'></i>
+                    </button>
+                </div>
+                <div class="input-tips">
+                    <div class="tip-header">
+                        <i class='bx bx-info-circle'></i> 输入提示
+                    </div>
+                    <ul class="tip-list">
+                        <li><strong>标准格式:</strong> 周一 10:00-12:00 写代码</li>
+                        <li><strong>分隔符格式:</strong> 写代码 | 周一 | 10:00-12:00</li>
+                        <li><strong>任务优先格式:</strong> 写代码 10:00-12:00 周一</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="structured-input" class="tab-content">
+                <div class="structured-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="daySelect">
+                                <i class='bx bx-calendar'></i> 星期
+                            </label>
+                            <select id="daySelect" required>
+                                <option value="">请选择</option>
+                                <option value="周一">周一</option>
+                                <option value="周二">周二</option>
+                                <option value="周三">周三</option>
+                                <option value="周四">周四</option>
+                                <option value="周五">周五</option>
+                                <option value="周六">周六</option>
+                                <option value="周日">周日</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="startTime">
+                                <i class='bx bx-time'></i> 开始时间
+                            </label>
+                            <input type="time" id="startTime" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="endTime">
+                                <i class='bx bx-time-five'></i> 结束时间
+                            </label>
+                            <input type="time" id="endTime" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskName">
+                                <i class='bx bx-task'></i> 任务名称
+                            </label>
+                            <input type="text" id="taskName" placeholder="例如：写代码" required>
+                        </div>
+                    </div>
+                    
+                    <button id="addTaskBtn">
+                        <i class='bx bx-plus'></i> 添加任务
+                    </button>
+                    
+                    <div class="task-list-container">
+                        <h3><i class='bx bx-list-check'></i> 已添加的任务</h3>
+                        <ul id="taskList"></ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button id="generateBtn" onclick="generateTable()">
+                    <i class='bx bx-table'></i> 生成表格
+                </button>
+                <button id="exportBtn" onclick="exportToExcel()" disabled>
+                    <i class='bx bx-export'></i> 导出Excel
+                </button>
+                <button id="clearBtn" onclick="clearAll()">
+                    <i class='bx bx-trash'></i> 清除
+                </button>
+            </div>
+        </div>
+        
+        <div id="tableContainer" class="card"></div>
+        <div id="ganttContainer" class="card"></div>
+        
+        <footer>
+            <p>AI由SMT提供支持</p>
+            <p>版权所有 © 2025 Vincent。保留所有权利。未经作者事先书面许可，不得以任何形式或方式复制、分发或传播本作品的任何部分</p>
+        </footer>
+    </div>
+
+    <!-- AI辅助输入模态框 -->
+    <div id="aiInputModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2><i class='bx bx-bot'></i> AI辅助输入</h2>
+            <p>请用自然语言描述您的时间计划，AI将帮您转换为标准格式</p>
+            
+            <div class="ai-tips">
+                <div class="tip-header">
+                    <i class='bx bx-bulb'></i> 输入示例
+                </div>
+                <ul class="tip-list">
+                    <li>"给我制作一个周一全天的计划"</li>
+                    <li>"星期二早上9点到11点30分学习，下午3点到5点健身"</li>
+                    <li>"我想在周三晚上7点到9点看电影"</li>
+                </ul>
+            </div>
+            
+            <textarea id="aiInputText" placeholder="例如：我想在周一上午10点到12点写代码，然后下午2点到4点开会..."></textarea>
+            
+            <div id="aiLoading" class="ai-loading">
+                <div class="spinner"></div>
+                <p>AI正在处理中...</p>
+            </div>
+            
+            <div id="aiResult" class="ai-result"></div>
+            
+            <div class="modal-buttons">
+                <button id="aiConvertBtn">
+                    <i class='bx bx-transfer'></i> 转换
+                </button>
+                <button id="aiCancelBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入SheetJS库用于Excel导出 -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- 引入ECharts用于甘特图 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

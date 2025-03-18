@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星火API测试页面</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #4CAF50;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .original, .processed {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .processed {
+            background-color: #e8f5e9;
+        }
+        h3 {
+            margin: 10px 0;
+            color: #555;
+        }
+    </style>
+    
+    <!-- 加密库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>星火API测试页面</h1>
+        
+        <div class="form-group">
+            <label for="apiKey">API Key</label>
+            <input type="text" id="apiKey" value="b1ac6aed76cef76575745f348445afdc">
+        </div>
+        
+        <div class="form-group">
+            <label for="apiSecret">API Secret</label>
+            <input type="text" id="apiSecret" value="MGJhNmNhNThlNzQyZmM5MTY5OTRlZjZl">
+        </div>
+        
+        <div class="form-group">
+            <label for="appId">App ID</label>
+            <input type="text" id="appId" value="3993bebc">
+        </div>
+        
+        <div class="form-group">
+            <label for="message">用户消息</label>
+            <textarea id="message" rows="4" placeholder="输入测试消息，例如：我周一上午10点到12点要写代码，下午2点到4点开会"></textarea>
+        </div>
+        
+        <button id="sendBtn">发送消息</button>
+        
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <span>处理中...</span>
+        </div>
+        
+        <div id="result" class="result">
+            <h3>API响应结果</h3>
+            <div id="original" class="original"></div>
+            
+            <h3>处理后结果</h3>
+            <div id="processed" class="processed"></div>
+        </div>
+    </div>
+    
+    <script>
+        // 星火API处理代码
+        const sparkAPI = {
+            ws: null,
+            
+            // 生成认证URL
+            generateAuthUrl(appId, apiKey, apiSecret) {
+                const url = "wss://spark-api.xf-yun.com/v1.1/chat";
+                const date = new Date().toGMTString();
+                const signatureOrigin = `host: spark-api.xf-yun.com\ndate: ${date}\nGET /v1.1/chat HTTP/1.1`;
+                const signatureSha = CryptoJS.HmacSHA256(signatureOrigin, apiSecret);
+                const signature = CryptoJS.enc.Base64.stringify(signatureSha);
+                const authorizationOrigin = `api_key="${apiKey}", algorithm="hmac-sha256", headers="host date request-line", signature="${signature}"`;
+                const authorization = btoa(authorizationOrigin);
+                
+                return `${url}?authorization=${authorization}&date=${encodeURIComponent(date)}&host=spark-api.xf-yun.com`;
+            },
+            
+            // 发送消息
+            sendMessage(appId, apiKey, apiSecret, message, callback) {
+                return new Promise((resolve, reject) => {
+                    const url = this.generateAuthUrl(appId, apiKey, apiSecret);
+                    this.ws = new WebSocket(url);
+                    
+                    let result = '';
+                    
+                    this.ws.onopen = () => {
+                        console.log('WebSocket连接已建立');
+                        
+                        const data = {
+                            header: {
+                                app_id: appId,
+                                uid: "API_TEST"
+                            },
+                            parameter: {
+                                chat: {
+                                    domain: "lite",
+                                    temperature: 0.5,
+                                    max_tokens: 2048
+                                }
+                            },
+                            payload: {
+                                message: {
+                                    text: [
+                                        {
+                                            role: "system",
+                                            content: `你是一个时间计划助手，帮助用户将自然语言描述的时间计划转换为标准格式。
+                                            标准格式为：周X HH:MM-HH:MM 任务名称
+                                            例如：周一 10:00-12:00 写代码
+                                            请分析用户的输入，提取出时间（转换为24小时制）、星期几和任务名称，然后按照标准格式输出。
+                                            如果用户提到多个任务，请将每个任务单独一行输出。
+                                            如果无法解析某些信息，请尽量推断，实在无法推断则输出无法解析的提示。
+                                            只输出转换后的结果，不要有任何其他解释性文字。
+                                            不要包含前缀、后缀或其他格式内容，直接输出转换后的时间计划格式。`
+                                        },
+                                        {
+                                            role: "user",
+                                            content: message
+                                        }
+                                    ]
+                                }
+                            }
+                        };
+                        
+                        this.ws.send(JSON.stringify(data));
+                    };
+                    
+                    this.ws.onmessage = (event) => {
+                        try {
+                            const response = JSON.parse(event.data);
+                            
+                            // 检查是否有错误
+                            if (response.header.code !== 0) {
+                                console.error('API返回错误:', response.header.message);
+                                reject(new Error(`API错误: ${response.header.message}`));
+                                return;
+                            }
+                            
+                            // 处理返回的文本
+                            if (response.payload && response.payload.choices && response.payload.choices.text) {
+                                const content = response.payload.choices.text[0].content;
+                                result += content;
+                                callback(result, false);
+                            }
+                            
+                            // 检查是否是最后一条消息
+                            if (response.header.status === 2) {
+                                console.log('API请求完成');
+                                this.ws.close();
+                                resolve(result);
+                            }
+                        } catch (error) {
+                            console.error('解析API响应失败:', error);
+                            reject(new Error('解析API响应失败'));
+                        }
+                    };
+                    
+                    this.ws.onerror = (error) => {
+                        console.error('WebSocket连接错误:', error);
+                        reject(new Error('WebSocket连接失败'));
+                    };
+                    
+                    this.ws.onclose = () => {
+                        console.log('WebSocket连接已关闭');
+                    };
+                    
+                    // 设置超时
+                    setTimeout(() => {
+                        if (this.ws.readyState !== WebSocket.CLOSED) {
+                            this.ws.close();
+                            reject(new Error('请求超时'));
+                        }
+                    }, 15000);
+                });
+            }
+        };
+        
+        // 清理API响应，确保格式正确
+        function cleanupApiResponse(text) {
+            if (!text) return '';
+            
+            // 移除可能的解释性内容
+            let processedText = text;
+            
+            // 移除开头的解释文字（可能包含"以下是"、"好的"、"这是"等开头）
+            processedText = processedText.replace(/^(好的|以下是|这是|根据您的描述|我已将|已转换为|转换结果为|转换结果如下)[，。,:：\s]*/i, '');
+            
+            // 移除含有"标准格式"、"时间计划"等解释性文字的行
+            const lines = processedText.split('\n');
+            const validLines = lines.filter(line => {
+                const trimmed = line.trim();
+                // 排除解释性文字行
+                return trimmed && 
+                       !trimmed.match(/^(标准格式|时间计划|转换后|转换为|转换结果|结果如下)/i) &&
+                       !trimmed.match(/^(这里是|请参考|希望帮到您|还有其他需要|希望这个)/i);
+            });
+            
+            // 验证每行格式是否符合"周X HH:MM-HH:MM 任务名称"
+            const formattedLines = validLines.map(line => {
+                const trimmed = line.trim();
+                // 如果已经符合格式，直接返回
+                if (trimmed.match(/^(周[一二三四五六日]|星期[一二三四五六日])\s+\d{1,2}:\d{2}-\d{1,2}:\d{2}\s+.+$/)) {
+                    return trimmed;
+                }
+                
+                // 如果包含日期和时间信息但格式不正确，尝试修正
+                const dayMatch = trimmed.match(/(周[一二三四五六日]|星期[一二三四五六日])/);
+                const timeMatch = trimmed.match(/(\d{1,2}:\d{2})-(\d{1,2}:\d{2})/);
+                
+                if (dayMatch && timeMatch) {
+                    // 抽取任务名称（假设任务名称是除了日期和时间之外的内容）
+                    let task = trimmed
+                        .replace(dayMatch[0], '')
+                        .replace(timeMatch[0], '')
+                        .replace(/[,，:：.。]*/g, '')
+                        .trim();
+                    
+                    // 重新组合为规范格式
+                    return `${dayMatch[0]} ${timeMatch[0]} ${task}`;
+                }
+                
+                // 如果无法修正，保持原样
+                return trimmed;
+            });
+            
+            return formattedLines.join('\n');
+        }
+        
+        // 页面交互逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            const sendBtn = document.getElementById('sendBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const originalDiv = document.getElementById('original');
+            const processedDiv = document.getElementById('processed');
+            
+            sendBtn.addEventListener('click', async function() {
+                const appId = document.getElementById('appId').value.trim();
+                const apiKey = document.getElementById('apiKey').value.trim();
+                const apiSecret = document.getElementById('apiSecret').value.trim();
+                const message = document.getElementById('message').value.trim();
+                
+                if (!appId || !apiKey || !apiSecret || !message) {
+                    alert('请填写所有字段');
+                    return;
+                }
+                
+                // 显示加载状态
+                sendBtn.disabled = true;
+                loading.style.display = 'block';
+                result.style.display = 'none';
+                
+                try {
+                    // 发送消息
+                    const response = await sparkAPI.sendMessage(appId, apiKey, apiSecret, message, (partialResult) => {
+                        // 更新原始结果
+                        originalDiv.textContent = partialResult;
+                        
+                        // 更新处理后结果
+                        processedDiv.textContent = cleanupApiResponse(partialResult);
+                    });
+                    
+                    // 显示结果
+                    originalDiv.textContent = response;
+                    processedDiv.textContent = cleanupApiResponse(response);
+                    result.style.display = 'block';
+                    
+                } catch (error) {
+                    console.error('发送消息失败:', error);
+                    alert(`错误: ${error.message}`);
+                } finally {
+                    // 隐藏加载状态
+                    loading.style.display = 'none';
+                    sendBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星火API测试</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .logs {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>星火API WebSocket测试</h1>
+    
+    <div>
+        <h2>输入</h2>
+        <textarea id="inputText" placeholder="输入自然语言描述，例如：我周一上午9点到11点写代码，下午2点到4点开会"></textarea>
+    </div>
+    
+    <div>
+        <button id="testButton">测试连接</button>
+    </div>
+    
+    <div>
+        <h2>响应结果</h2>
+        <pre id="result">结果将显示在这里...</pre>
+    </div>
+    
+    <div>
+        <h2>日志</h2>
+        <div id="logs" class="logs"></div>
+    </div>
+    
+    <script>
+        document.getElementById('testButton').addEventListener('click', function() {
+            const inputText = document.getElementById('inputText').value.trim();
+            if (!inputText) {
+                log('请输入测试文本');
+                return;
+            }
+            
+            testSparkAPI(inputText);
+        });
+        
+        function log(message) {
+            const logsDiv = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logsDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+        
+        async function testSparkAPI(text) {
+            log('开始测试星火API...');
+            document.getElementById('result').textContent = '处理中...';
+            
+            try {
+                // 星火API配置
+                const API_URL = "wss://spark-api.xf-yun.com/v1.1/chat";
+                const APPID = "3993bebc";
+                const API_KEY = "b1ac6aed76cef76575745f348445afdc";
+                const API_SECRET = "MGJhNmNhNThlNzQyZmM5MTY5OTRlZjZl";
+                
+                log(`连接到 ${API_URL}`);
+                
+                // 创建WebSocket连接
+                const ws = new WebSocket(API_URL);
+                
+                // 存储结果
+                let resultText = '';
+                
+                // 连接打开
+                ws.onopen = function() {
+                    log('WebSocket连接已打开');
+                    
+                    // 构建请求数据
+                    const requestData = {
+                        header: {
+                            app_id: APPID,
+                            uid: "TestUser"
+                        },
+                        parameter: {
+                            chat: {
+                                domain: "lite",
+                                temperature: 0.5,
+                                max_tokens: 1024
+                            }
+                        },
+                        payload: {
+                            message: {
+                                text: [
+                                    {
+                                        role: "system",
+                                        content: "你是一个时间计划助手，帮助用户将自然语言描述的时间计划转换为标准格式。标准格式为：周X HH:MM-HH:MM 任务名称。例如：周一 10:00-12:00 写代码。请分析用户的输入，提取时间、星期几和任务名称，按照标准格式输出。如果用户提到多个任务，请将每个任务单独一行输出。直接给我结果不要其他语言。"
+                                    },
+                                    {
+                                        role: "user",
+                                        content: text
+                                    }
+                                ]
+                            }
+                        }
+                    };
+                    
+                    // 发送请求
+                    log('发送请求数据');
+                    ws.send(JSON.stringify(requestData));
+                };
+                
+                // 接收消息
+                ws.onmessage = function(event) {
+                    log('收到消息');
+                    try {
+                        const response = JSON.parse(event.data);
+                        log(`状态码: ${response.header?.code}, 状态: ${response.header?.status}`);
+                        
+                        if (response.header && response.header.code !== 0) {
+                            log(`错误: ${response.header.message}`);
+                            return;
+                        }
+                        
+                        if (response.payload && response.payload.choices && response.payload.choices.text) {
+                            const content = response.payload.choices.text[0].content;
+                            log(`接收到内容: ${content}`);
+                            resultText += content;
+                            document.getElementById('result').textContent = resultText;
+                        }
+                        
+                        if (response.header && response.header.status === 2) {
+                            log('处理完成');
+                            ws.close();
+                        }
+                    } catch (error) {
+                        log(`解析响应失败: ${error.message}`);
+                        log(`原始响应: ${event.data}`);
+                    }
+                };
+                
+                // 错误处理
+                ws.onerror = function(error) {
+                    log(`WebSocket错误: ${error.message || '未知错误'}`);
+                };
+                
+                // 连接关闭
+                ws.onclose = function(event) {
+                    log(`WebSocket连接关闭，代码: ${event.code}，原因: ${event.reason || '无'}`);
+                };
+                
+            } catch (error) {
+                log(`测试失败: ${error.message}`);
+                document.getElementById('result').textContent = `错误: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 
