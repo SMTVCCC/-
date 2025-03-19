@@ -69,18 +69,27 @@ function handleApiResult(result, isComplete) {
     const aiResult = document.getElementById('aiResult');
     const aiLoading = document.getElementById('aiLoading');
     const aiConvertBtn = document.getElementById('aiConvertBtn');
+    const aiCancelBtn = document.getElementById('aiCancelBtn');
+    const modalButtons = document.querySelector('.modal-buttons');
     
     // 后处理响应文本，清除多余解释性内容
     let processedResult = cleanupApiResponse(result);
     
-    // 显示结果
+    // 显示结果，直接使用简单的文本区域
     aiResult.textContent = processedResult;
     aiResult.style.display = 'block';
     
-    // 添加"使用此结果"按钮
+    // 移除之前可能存在的按钮
+    const existingUseBtn = document.getElementById('useResultBtn');
+    if (existingUseBtn) {
+        existingUseBtn.remove();
+    }
+    
+    // 创建"使用此结果"按钮
     const useResultBtn = document.createElement('button');
     useResultBtn.textContent = '使用此结果';
     useResultBtn.className = 'use-result-btn';
+    useResultBtn.id = 'useResultBtn';
     
     useResultBtn.addEventListener('click', function() {
         document.getElementById('planInput').value = processedResult;
@@ -92,13 +101,8 @@ function handleApiResult(result, isComplete) {
         showNotification('已应用', '已将转换结果应用到输入框', 'success');
     });
     
-    // 清除之前的按钮（如果有）
-    const oldBtn = aiResult.querySelector('.use-result-btn');
-    if (oldBtn) {
-        aiResult.removeChild(oldBtn);
-    }
-    
-    aiResult.appendChild(useResultBtn);
+    // 将按钮添加到底部按钮区域
+    modalButtons.insertBefore(useResultBtn, aiCancelBtn);
     
     // 隐藏加载状态
     aiLoading.style.display = 'none';
@@ -179,14 +183,28 @@ function initAIAssistant() {
     const aiInputText = document.getElementById('aiInputText');
     const aiResult = document.getElementById('aiResult');
     const aiLoading = document.getElementById('aiLoading');
+    const planInput = document.getElementById('planInput');
     
     // 打开模态框
     aiAssistBtn.addEventListener('click', function() {
         aiInputModal.style.display = 'block';
+        
+        // 自动获取主输入框中的文字
+        const mainInputText = planInput.value.trim();
+        if (mainInputText) {
+            aiInputText.value = mainInputText;
+        }
+        
         aiInputText.focus();
         aiResult.style.display = 'none';
         aiResult.textContent = '';
         aiLoading.style.display = 'none';
+        
+        // 移除可能存在的"使用此结果"按钮
+        const existingUseBtn = document.getElementById('useResultBtn');
+        if (existingUseBtn) {
+            existingUseBtn.remove();
+        }
     });
     
     // 关闭模态框
@@ -421,29 +439,45 @@ function parseInput(text) {
         
         // 如果没有匹配任何格式，尝试更宽松的匹配
         if (!matched) {
-            // 尝试提取时间格式 (HH:MM-HH:MM)
-            const timeMatch = line.match(/(\d{1,2}:\d{2})-(\d{1,2}:\d{2})/);
-            if (timeMatch) {
-                // 尝试提取星期
-                let day = '';
-                const dayMatch = line.match(/(周[一二三四五六日]|星期[一二三四五六日])/);
-                if (dayMatch) {
-                    day = dayMatch[1];
+            try {
+                // 尝试提取时间格式 (HH:MM-HH:MM)
+                const timeMatch = line.match(/(\d{1,2}:\d{2})-(\d{1,2}:\d{2})/);
+                if (timeMatch) {
+                    // 尝试提取星期
+                    let day = '';
+                    const dayMatch = line.match(/(周[一二三四五六日]|星期[一二三四五六日])/);
+                    if (dayMatch) {
+                        day = dayMatch[1];
+                    }
+                    
+                    // 如果没有找到星期但有现有任务，使用上一个任务的星期
+                    if (!day && tasks.length > 0) {
+                        day = tasks[tasks.length - 1].day;
+                    }
+                    
+                    // 如果还是没有星期，设为默认值
+                    if (!day) {
+                        day = '未指定';
+                    }
+                    
+                    // 提取任务名称 (假设任务名称是剩余的文本)
+                    let taskName = line
+                        .replace(timeMatch[0], '')
+                        .replace(day, '')
+                        .replace(/[,，:：]/, '')
+                        .trim();
+                    
+                    tasks.push({
+                        day: day,
+                        start: timeMatch[1],
+                        end: timeMatch[2],
+                        task: taskName || '未命名任务',
+                        duration: calculateDuration(timeMatch[1], timeMatch[2])
+                    });
                 }
-                
-                // 提取任务名称 (假设任务名称是剩余的文本)
-                let taskName = line
-                    .replace(timeMatch[0], '')
-                    .replace(day, '')
-                    .trim();
-                
-                tasks.push({
-                    day: day || '未指定',
-                    start: timeMatch[1],
-                    end: timeMatch[2],
-                    task: taskName || '未命名任务',
-                    duration: calculateDuration(timeMatch[1], timeMatch[2])
-                });
+            } catch (error) {
+                console.error('解析行出错:', line, error);
+                // 解析错误时，不添加任务，继续处理下一行
             }
         }
     });
@@ -514,15 +548,23 @@ function generateTable() {
         return;
     }
     
-    let tasks = parseInput(inputText);
+    let newTasks = parseInput(inputText);
+    
+    // 获取现有表格中的任务
+    const existingTasks = getExistingTasks();
+    
+    // 合并任务（避免重复）
+    let tasks = mergeTaskLists(existingTasks, newTasks);
+    
     tasks = checkConflicts(tasks);
     
     const tableContainer = document.getElementById('tableContainer');
-    tableContainer.innerHTML = '';
     
     if (tasks.length === 0) {
         showNotification('格式错误', '无法解析输入的时间计划，请检查格式是否正确', 'error');
-        tableContainer.innerHTML = '<div class="empty-state"><i class="bx bx-calendar-x"></i><p>暂无数据</p></div>';
+        if (tableContainer.innerHTML === '') {
+            tableContainer.innerHTML = '<div class="empty-state"><i class="bx bx-calendar-x"></i><p>暂无数据</p></div>';
+        }
         return;
     }
     
@@ -582,6 +624,7 @@ function generateTable() {
     });
     table.appendChild(tbody);
     
+    tableContainer.innerHTML = ''; // 这里仍然清空，但我们已经保存了之前的任务
     tableContainer.appendChild(table);
     
     // 启用导出按钮
@@ -592,6 +635,61 @@ function generateTable() {
     
     // 生成甘特图
     generateGanttChart(tasks);
+}
+
+// 获取已有表格中的任务
+function getExistingTasks() {
+    const table = document.querySelector('#tableContainer table');
+    if (!table) return [];
+    
+    const tasks = [];
+    const rows = table.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 5) {
+            tasks.push({
+                day: cells[0].textContent,
+                task: cells[1].textContent,
+                start: cells[2].textContent,
+                end: cells[3].textContent,
+                duration: cells[4].textContent,
+                hasConflict: row.classList.contains('conflict')
+            });
+        }
+    });
+    
+    return tasks;
+}
+
+// 合并任务列表，避免重复
+function mergeTaskLists(existingTasks, newTasks) {
+    if (existingTasks.length === 0) return newTasks;
+    if (newTasks.length === 0) return existingTasks;
+    
+    // 创建任务的唯一标识符
+    const createTaskKey = (task) => `${task.day}-${task.start}-${task.end}-${task.task}`;
+    
+    // 用于检测重复的集合
+    const taskKeys = new Set();
+    
+    // 添加现有任务的键
+    existingTasks.forEach(task => {
+        taskKeys.add(createTaskKey(task));
+    });
+    
+    // 合并新任务，排除重复
+    const result = [...existingTasks];
+    
+    newTasks.forEach(newTask => {
+        const key = createTaskKey(newTask);
+        if (!taskKeys.has(key)) {
+            result.push(newTask);
+            taskKeys.add(key);
+        }
+    });
+    
+    return result;
 }
 
 // 生成甘特图

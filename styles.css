@@ -433,7 +433,7 @@ textarea:focus {
     font-family: monospace;
     font-size: 0.95rem;
     line-height: 1.6;
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
 }
 
@@ -622,8 +622,7 @@ td[contenteditable="true"]:hover::after {
     cursor: pointer;
     font-weight: 600;
     transition: var(--transition);
-    display: block;
-    margin-top: 15px;
+    margin-right: 10px;
     box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
 }
 
@@ -926,4 +925,34 @@ tr:last-child td:last-child {
 
 .download-btn:active {
     transform: translateY(0);
+}
+
+/* 删除不再使用的AI结果容器样式 */
+/* AI结果相关样式 */
+.ai-result-container {
+    display: none;
+}
+
+.ai-result-text {
+    display: none;
+}
+
+.ai-result-buttons {
+    display: none;
+}
+
+/* 修改AI结果区域的样式 */
+.ai-result {
+    display: none;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin: 20px 0;
+    border-left: 4px solid var(--primary-color);
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-height: 300px;
+    overflow-y: auto;
 } 
