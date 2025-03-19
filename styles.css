@@ -285,27 +285,78 @@ textarea:focus {
     background-color: #fff;
 }
 
+/* 美化AI辅助按钮 */
 .ai-assist-btn {
     position: absolute;
     right: 15px;
-    top: 15px;
-    background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
-    color: white;
+    bottom: 15px;
+    width: 48px;
+    height: 48px;
     border: none;
     border-radius: 50%;
-    width: 42px;
-    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: var(--transition);
-    box-shadow: 0 4px 10px rgba(247, 37, 133, 0.3);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-size: 24px;
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    outline: none;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.ai-assist-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
 }
 
 .ai-assist-btn:hover {
-    transform: translateY(-3px) rotate(5deg);
-    box-shadow: 0 6px 15px rgba(247, 37, 133, 0.4);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 7px 20px rgba(67, 97, 238, 0.4);
+}
+
+.ai-assist-btn:hover::before {
+    opacity: 1;
+}
+
+.ai-assist-btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+}
+
+.ai-assist-btn i {
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease;
+}
+
+.ai-assist-btn:hover i {
+    transform: scale(1.1);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .modal {
@@ -955,4 +1006,157 @@ tr:last-child td:last-child {
     line-height: 1.6;
     max-height: 300px;
     overflow-y: auto;
+}
+
+/* 语言切换按钮 */
+.language-switcher {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
+}
+
+.lang-btn:hover {
+    background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
+}
+
+.lang-btn i {
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .language-switcher {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .lang-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+/* 操作按钮样式 */
+.actions-cell {
+    position: relative;
+}
+
+.actions-menu-btn {
+    background: #eaecef;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.actions-menu-btn:hover {
+    background: #d0d7de;
+}
+
+.actions-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border-radius: var(--border-radius);
+    min-width: 150px;
+    display: none;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.actions-menu.show {
+    display: block;
+    animation: fadeInUp 0.2s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.action-item:hover {
+    background-color: #f1f3f5;
+}
+
+.action-item i {
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.action-item.delete-action {
+    color: var(--danger-color);
+}
+
+.action-item.delete-action:hover {
+    background-color: #fff5f7;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .actions-menu-btn {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .actions-menu {
+        min-width: 130px;
+    }
+    
+    .action-item {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+    
+    th:last-child {
+        width: 50px;
+    }
+}
+
+th:last-child {
+    width: 60px;
+    text-align: center;
+}
+
+.task-actions {
+    text-align: center;
 } 

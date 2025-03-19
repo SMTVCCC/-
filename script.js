@@ -1,12 +1,351 @@
+// 多语言支持
+// 定义语言字典
+const i18n = {
+    'en': {
+        // 标题和主页元素
+        'title': 'AI Smart Time Scheduler',
+        'subtitle': 'Smitty Heple You Efficiently Manage Your Time',
+        'freeform_tab': 'Free Input',
+        'structured_tab': 'Structured Input',
+        'plan_input_placeholder': 'Enter time schedule (Example: Monday 10:00-12:00 Coding)',
+        'ai_assist_btn': 'AI-assisted Input',
+        'input_tips_header': 'Input Tips',
+        'standard_format': 'Standard Format:',
+        'standard_format_example': 'Monday 10:00-12:00 Coding',
+        'separator_format': 'Separator Format:',
+        'separator_format_example': 'Coding | Monday | 10:00-12:00',
+        'task_priority_format': 'Task Priority Format:',
+        'task_priority_format_example': 'Coding 10:00-12:00 Monday',
+        
+        // 结构化输入表单
+        'day_label': 'Day',
+        'please_select': 'Please select',
+        'monday': 'Monday',
+        'tuesday': 'Tuesday',
+        'wednesday': 'Wednesday',
+        'thursday': 'Thursday',
+        'friday': 'Friday',
+        'saturday': 'Saturday',
+        'sunday': 'Sunday',
+        'start_time': 'Start Time',
+        'end_time': 'End Time',
+        'task_name': 'Task Name',
+        'task_name_placeholder': 'Example: Coding',
+        'add_task': 'Add Task',
+        'added_tasks': 'Added Tasks',
+        
+        // 按钮
+        'generate_table': 'Generate Table',
+        'export_excel': 'Export Excel',
+        'clear': 'Clear',
+        
+        // AI助手模态框
+        'ai_assist_title': 'AI-assisted Input',
+        'ai_assist_description': 'Please describe your time schedule in natural language, and the AI will help you convert it to the standard format',
+        'input_examples': 'Input Examples',
+        'example_1': '"Give me a detailed schedule for a week"',
+        'example_2': '"Study from 9 AM to 11:30 AM on Tuesday, and workout from 3 PM to 5 PM"',
+        'example_3': '"I want to watch a movie on Wednesday from 7 PM to 9 PM"',
+        'ai_input_placeholder': 'Example: I want to code from 10 AM to 12 PM on Monday, and then have a meeting from 2 PM to 4 PM...',
+        'ai_processing': 'AI is processing...',
+        'convert': 'Convert',
+        'cancel': 'Cancel',
+        'use_result': 'Use This Result',
+        
+        // 表格和甘特图
+        'day_header': 'Day',
+        'task_header': 'Task',
+        'start_header': 'Start Time',
+        'end_header': 'End Time',
+        'duration_header': 'Duration',
+        'actions_header': 'Actions',
+        'gantt_title': 'Time Schedule Gantt Chart',
+        'total_tasks': 'Total tasks: ',
+        'download_table': 'Download Table Image',
+        'download_gantt': 'Download Gantt Chart Image',
+        
+        // 通知
+        'input_error': 'Input Error',
+        'please_enter_plan': 'Please enter a time schedule',
+        'format_error': 'Format Error',
+        'parsing_error': 'Unable to parse the time schedule, please check the format',
+        'no_data': 'No data',
+        'conversion_success': 'Conversion Successful',
+        'applied_result': 'The conversion result has been applied to the input field',
+        'empty_input': 'Empty Input',
+        'enter_schedule_description': 'Please enter your time schedule description',
+        'conversion_failed': 'Conversion Failed',
+        'processing': 'Processing',
+        'generating_image': 'Generating image, please wait...',
+        'download_success': 'Download Successful',
+        'image_generated': 'Image has been successfully generated and downloaded',
+        'screenshot_failed': 'Screenshot Failed',
+        'element_not_found': 'Could not find the element to capture',
+        'library_not_found': 'html2canvas library not found, please check if it loaded correctly',
+        'library_load_success': 'Library loaded successfully, please try downloading again',
+        'library_load_failed': 'Failed to load html2canvas library, please check your network connection',
+        'export_error': 'Export Error',
+        'no_table_to_export': 'No table to export',
+        'gantt_success': 'Gantt Chart Generated',
+        'hover_for_details': 'You can hover over tasks to view details',
+        'gantt_failed': 'Gantt Chart Generation Failed',
+        'delete_success': 'Deletion Successful',
+        'task_deleted': 'Task has been deleted',
+        'operation_success': 'Operation Successful',
+        'task_moved_up': 'Task has been moved up',
+        'task_moved_down': 'Task has been moved down',
+        'hour': 'hour',
+        'hours': 'hours',
+        'minute': 'minute',
+        'minutes': 'minutes',
+        
+        // 页脚
+        'ai_powered': 'AI powered by SMT self-developed large model Smitty. Contact: smtoffice@163.com',
+        'copyright': 'Copyright © 2025 Vincent. All rights reserved. No part of this work may be reproduced, distributed, or transmitted in any form or by any means without the prior written permission of the author',
+        
+        'move_up': 'Move Up',
+        'move_down': 'Move Down',
+        'delete': 'Delete',
+        'confirm_delete': 'Are you sure you want to delete this task?',
+        'actions': 'Actions',
+        'more_actions': 'More Actions',
+    },
+    'zh': {
+        // 标题和主页元素
+        'title': 'AI智能时间计划表',
+        'subtitle': '高效管理您的时间',
+        'freeform_tab': '自由输入',
+        'structured_tab': '结构化输入',
+        'plan_input_placeholder': '输入时间计划（示例：周一 10:00-12:00 写代码）',
+        'ai_assist_btn': 'AI辅助输入',
+        'input_tips_header': '输入提示',
+        'standard_format': '标准格式:',
+        'standard_format_example': '周一 10:00-12:00 写代码',
+        'separator_format': '分隔符格式:',
+        'separator_format_example': '写代码 | 周一 | 10:00-12:00',
+        'task_priority_format': '任务优先格式:',
+        'task_priority_format_example': '写代码 10:00-12:00 周一',
+        
+        // 结构化输入表单
+        'day_label': '星期',
+        'please_select': '请选择',
+        'monday': '周一',
+        'tuesday': '周二',
+        'wednesday': '周三',
+        'thursday': '周四',
+        'friday': '周五',
+        'saturday': '周六',
+        'sunday': '周日',
+        'start_time': '开始时间',
+        'end_time': '结束时间',
+        'task_name': '任务名称',
+        'task_name_placeholder': '例如：写代码',
+        'add_task': '添加任务',
+        'added_tasks': '已添加的任务',
+        
+        // 按钮
+        'generate_table': '生成表格',
+        'export_excel': '导出Excel',
+        'clear': '清除',
+        
+        // AI助手模态框
+        'ai_assist_title': 'AI辅助输入',
+        'ai_assist_description': '请用自然语言描述您的时间计划，AI将帮您转换为标准格式',
+        'input_examples': '输入示例',
+        'example_1': '"给我一个一周的详细计划"',
+        'example_2': '"星期二早上9点到11点30分学习，下午3点到5点健身"',
+        'example_3': '"我想在周三晚上7点到9点看电影"',
+        'ai_input_placeholder': '例如：我想在周一上午10点到12点写代码，然后下午2点到4点开会...',
+        'ai_processing': 'AI正在处理中...',
+        'convert': '转换',
+        'cancel': '取消',
+        'use_result': '使用此结果',
+        
+        // 表格和甘特图
+        'day_header': '星期',
+        'task_header': '任务',
+        'start_header': '开始时间',
+        'end_header': '结束时间',
+        'duration_header': '持续时间',
+        'actions_header': '操作',
+        'gantt_title': '时间计划甘特图',
+        'total_tasks': '共 ',
+        'total_tasks_suffix': ' 个任务',
+        'download_table': '下载时间表图片',
+        'download_gantt': '下载甘特图图片',
+        
+        // 通知
+        'input_error': '输入错误',
+        'please_enter_plan': '请输入时间计划',
+        'format_error': '格式错误',
+        'parsing_error': '无法解析输入的时间计划，请检查格式是否正确',
+        'no_data': '暂无数据',
+        'conversion_success': '转换成功',
+        'applied_result': '已将转换结果应用到输入框',
+        'empty_input': '输入为空',
+        'enter_schedule_description': '请输入您的时间计划描述',
+        'conversion_failed': '转换失败',
+        'processing': '正在处理',
+        'generating_image': '正在生成图片，请稍候...',
+        'download_success': '下载成功',
+        'image_generated': '图片已成功生成并下载',
+        'screenshot_failed': '截图失败',
+        'element_not_found': '找不到要截图的元素',
+        'library_not_found': '未找到html2canvas库，请检查是否正确加载',
+        'library_load_success': 'html2canvas库已加载，请再次尝试下载',
+        'library_load_failed': '无法加载html2canvas库，请检查网络连接',
+        'export_error': '导出错误',
+        'no_table_to_export': '没有表格可以导出',
+        'gantt_success': '甘特图生成成功',
+        'hover_for_details': '您可以悬停在任务上查看详细信息',
+        'gantt_failed': '甘特图生成失败',
+        'delete_success': '删除成功',
+        'task_deleted': '任务已删除',
+        'operation_success': '操作成功',
+        'task_moved_up': '任务已向上移动',
+        'task_moved_down': '任务已向下移动',
+        'hour': '小时',
+        'hours': '小时',
+        'minute': '分钟',
+        'minutes': '分钟',
+        
+        // 页脚
+        'ai_powered': 'AI由SMT自研大模型Smitty提供支持。问题联系：smtoffice@163.com',
+        'copyright': '版权所有 © 2025 Vincent。保留所有权利。未经作者事先书面许可，不得以任何形式或方式复制、分发或传播本作品的任何部分',
+        
+        'move_up': '向上移动',
+        'move_down': '向下移动',
+        'delete': '删除',
+        'confirm_delete': '确定要删除这个任务吗？',
+        'actions': '操作',
+        'more_actions': '更多操作',
+    }
+};
+
+// 当前语言
+let currentLang = 'en'; // 默认英文
+
 // 页面加载时检查本地存储
 document.addEventListener('DOMContentLoaded', function() {
+    // 检查本地存储中是否有语言设置
+    const savedLang = localStorage.getItem('language');
+    if (savedLang && i18n[savedLang]) {
+        currentLang = savedLang;
+    }
+    
+    // 初始化语言
+    applyLanguage(currentLang);
+    
+    // 设置语言切换按钮
+    setupLanguageSwitcher();
+
     loadFromLocalStorage();
     initAIAssistant();
     initStructuredForm();
     
     // 初始化星火API
     initSparkApi();
+    
+    // 添加全局键盘快捷键
+    initKeyboardShortcuts();
+    
+    // 初始化搜索功能
+    initSearchFeature();
 });
+
+// 设置语言切换按钮
+function setupLanguageSwitcher() {
+    const langToggle = document.getElementById('langToggle');
+    const langText = document.getElementById('langText');
+    
+    // 更新按钮文本
+    langText.textContent = currentLang === 'en' ? '中文' : 'English';
+    
+    // 添加点击事件
+    langToggle.addEventListener('click', function() {
+        // 切换语言
+        const newLang = currentLang === 'en' ? 'zh' : 'en';
+        currentLang = newLang;
+        
+        // 保存语言设置到本地存储
+        localStorage.setItem('language', newLang);
+        
+        // 应用新语言
+        applyLanguage(newLang);
+        
+        // 更新按钮文本
+        langText.textContent = newLang === 'en' ? '中文' : 'English';
+        
+        // 显示通知
+        const notificationTitle = newLang === 'en' ? 'Language Changed' : '语言已更改';
+        const notificationMsg = newLang === 'en' ? 'Changed to English' : '已切换为中文';
+        showNotification(notificationTitle, notificationMsg, 'success');
+    });
+}
+
+// 应用语言到页面元素
+function applyLanguage(lang) {
+    // 获取语言字典
+    const dictionary = i18n[lang] || i18n['en'];
+    
+    // 更新具有data-i18n属性的元素
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (dictionary[key]) {
+            element.textContent = dictionary[key];
+        }
+    });
+    
+    // 更新占位符
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-i18n-placeholder');
+        if (dictionary[key]) {
+            element.placeholder = dictionary[key];
+        }
+    });
+    
+    // 更新工具提示
+    document.querySelectorAll('[data-i18n-title]').forEach(element => {
+        const key = element.getAttribute('data-i18n-title');
+        if (dictionary[key]) {
+            element.title = dictionary[key];
+        }
+    });
+    
+    // 更新页面标题
+    if (dictionary['title']) {
+        document.title = dictionary['title'] + ' | ' + dictionary['subtitle'];
+    }
+    
+    // 更新按钮文本
+    updateButtonsText(dictionary);
+}
+
+// 更新按钮和其他动态元素的文本
+function updateButtonsText(dictionary) {
+    // 更新"使用此结果"按钮
+    const useResultBtn = document.getElementById('useResultBtn');
+    if (useResultBtn && dictionary['use_result']) {
+        useResultBtn.textContent = dictionary['use_result'];
+    }
+    
+    // 更新下载按钮
+    const downloadBtns = document.querySelectorAll('.download-btn');
+    downloadBtns.forEach(btn => {
+        const btnText = btn.textContent.trim();
+        if (btnText.includes('下载时间表') && dictionary['download_table']) {
+            btn.innerHTML = `<i class="bx bx-download"></i> ${dictionary['download_table']}`;
+        } else if (btnText.includes('下载甘特图') && dictionary['download_gantt']) {
+            btn.innerHTML = `<i class="bx bx-download"></i> ${dictionary['download_gantt']}`;
+        }
+    });
+}
+
+// 获取当前语言的翻译
+function t(key, defaultText = '') {
+    const dictionary = i18n[currentLang] || i18n['en'];
+    return dictionary[key] || defaultText;
+}
 
 // 初始化星火API
 function initSparkApi() {
@@ -20,16 +359,27 @@ function initSparkApi() {
             domain: "lite"
         };
         
-        // 定义系统角色提示词
-        window.systemPrompt = `你是一个时间计划助手，帮助用户将自然语言描述的时间计划转换为标准格式，当用户要求给出建议时也可以根据用户的要求生成计划。
-        重要：严格按照格式为：周X HH:MM-HH:MM 任务名称
-        例如：周一 10:00-12:00 写代码
-        请分析用户的输入，提取出时间（转换为24小时制）、星期几和任务名称，然后按照标准格式输出。
-        如果用户提到多个任务，请将每个任务单独一行输出。
-        如果无法解析某些信息，请尽量推断，实在无法推断则告诉用户错误原因。
-        只输出转换后的结果，不要有任何其他解释性文字。
-        不要包含前缀、后缀或其他格式内容，直接输出转换后的时间计划格式。
-        重要：拒绝回答任何与时间计划无关的问题！！！。`;
+        // 定义系统角色提示词 - 根据当前语言
+        window.systemPrompt = currentLang === 'zh' ? 
+            `你是一个时间计划助手，帮助用户将自然语言描述的时间计划转换为标准格式，当用户要求给出建议时也可以根据用户的要求生成计划。
+            重要：严格按照格式为：周X HH:MM-HH:MM 任务名称
+            例如：周一 10:00-12:00 写代码
+            请分析用户的输入，提取出时间（转换为24小时制）、星期几和任务名称，然后按照标准格式输出。
+            如果用户提到多个任务，请将每个任务单独一行输出。
+            如果无法解析某些信息，请尽量推断，实在无法推断则告诉用户错误原因。
+            只输出转换后的结果，不要有任何其他解释性文字。
+            不要包含前缀、后缀或其他格式内容，直接输出转换后的时间计划格式。
+            重要：拒绝回答任何与时间计划无关的问题！！！。` :
+            
+            `You are a time scheduling assistant, helping users convert natural language descriptions of time schedules into a standard format, and generating schedules based on user requests.
+            Important: Use the strict format: Day HH:MM-HH:MM Task
+            Example: Monday 10:00-12:00 Coding
+            Analyze user input, extract time (in 24-hour format), day of the week, and task name, then output in the standard format.
+            If the user mentions multiple tasks, list each task on a separate line.
+            If you cannot parse certain information, try to infer it. If inference is impossible, explain the error.
+            Output only the converted result, without any explanatory text.
+            Do not include prefixes, suffixes, or other formatting content, just output the converted schedule format.
+            Important: Refuse to answer any questions unrelated to time scheduling!!!`;
         
         // 初始化API配置
         window.sparkAPI.init(apiConfig);
@@ -87,7 +437,7 @@ function handleApiResult(result, isComplete) {
     
     // 创建"使用此结果"按钮
     const useResultBtn = document.createElement('button');
-    useResultBtn.textContent = '使用此结果';
+    useResultBtn.textContent = t('use_result', '使用此结果');
     useResultBtn.className = 'use-result-btn';
     useResultBtn.id = 'useResultBtn';
     
@@ -98,7 +448,7 @@ function handleApiResult(result, isComplete) {
         // 自动生成表格
         generateTable();
         
-        showNotification('已应用', '已将转换结果应用到输入框', 'success');
+        showNotification(t('conversion_success', '已应用'), t('applied_result', '已将转换结果应用到输入框'), 'success');
     });
     
     // 将按钮添加到底部按钮区域
@@ -109,7 +459,7 @@ function handleApiResult(result, isComplete) {
     
     // 恢复按钮状态
     aiConvertBtn.disabled = false;
-    aiConvertBtn.innerHTML = '<i class="bx bx-transfer"></i> 转换';
+    aiConvertBtn.innerHTML = `<i class="bx bx-transfer"></i> ${t('convert', '转换')}`;
 }
 
 // 清理API响应，确保格式正确
@@ -227,7 +577,7 @@ function initAIAssistant() {
     aiConvertBtn.addEventListener('click', function() {
         const naturalText = aiInputText.value.trim();
         if (!naturalText) {
-            showNotification('输入为空', '请输入您的时间计划描述', 'error');
+            showNotification(t('empty_input', '输入为空'), t('enter_schedule_description', '请输入您的时间计划描述'), 'error');
             return;
         }
         
@@ -235,7 +585,7 @@ function initAIAssistant() {
         aiLoading.style.display = 'block';
         aiResult.style.display = 'none';
         aiConvertBtn.disabled = true;
-        aiConvertBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> 处理中...';
+        aiConvertBtn.innerHTML = `<i class="bx bx-loader-alt bx-spin"></i> ${t('processing', '处理中...')}`;
         
         // 保存当前用户文本
         currentUserText = naturalText;
@@ -244,15 +594,15 @@ function initAIAssistant() {
         processWithSparkAPI(naturalText)
             .catch(error => {
                 console.error('AI处理错误:', error);
-                aiResult.textContent = '转换失败: ' + error.message;
+                aiResult.textContent = t('conversion_failed', '转换失败') + ': ' + error.message;
                 aiResult.style.display = 'block';
                 aiLoading.style.display = 'none';
                 
-                showNotification('转换失败', error.message, 'error');
+                showNotification(t('conversion_failed', '转换失败'), error.message, 'error');
                 
                 // 恢复按钮状态
                 aiConvertBtn.disabled = false;
-                aiConvertBtn.innerHTML = '<i class="bx bx-transfer"></i> 转换';
+                aiConvertBtn.innerHTML = `<i class="bx bx-transfer"></i> ${t('convert', '转换')}`;
             });
     });
     
@@ -347,10 +697,9 @@ async function processLocally(text) {
         if (day && timeRange) {
             // 移除句子中的日期和时间信息，剩下的可能是任务描述
             task = sentence
-                .replace(/(周|星期)([一二三四五六日天])/, '')
-                .replace(/(上午|下午|晚上)(\d{1,2})点(?:到|至|-)(?:上午|下午|晚上)?(\d{1,2})点/, '')
-                .replace(/(\d{1,2})[:.：](\d{2})(?:\s*[-~到至]\s*)(\d{1,2})[:.：](\d{2})/, '')
-                .replace(/我要|我想|我需要|我打算|计划|安排/, '')
+                .replace(dayMatch[0], '')
+                .replace(timeMatch[0], '')
+                .replace(/[,，:：]/, '')
                 .trim();
             
             // 提取关键动词和名词作为任务名称
@@ -496,7 +845,15 @@ function calculateDuration(start, end) {
     const hours = Math.floor(durationMinutes / 60);
     const minutes = durationMinutes % 60;
     
-    return `${hours}小时${minutes > 0 ? minutes + '分钟' : ''}`;
+    // 根据当前语言返回不同格式
+    if (currentLang === 'zh') {
+        return `${hours}小时${minutes > 0 ? minutes + '分钟' : ''}`;
+    } else {
+        // 英文版本根据单复数使用不同的词
+        const hourText = hours === 1 ? t('hour', 'hour') : t('hours', 'hours');
+        const minuteText = minutes === 1 ? t('minute', 'minute') : t('minutes', 'minutes');
+        return `${hours} ${hourText}${minutes > 0 ? ' ' + minutes + ' ' + minuteText : ''}`;
+    }
 }
 
 // 检查时间冲突
@@ -544,7 +901,7 @@ function checkConflicts(tasks) {
 function generateTable() {
     const inputText = document.getElementById('planInput').value;
     if (!inputText.trim()) {
-        showNotification('输入错误', '请输入时间计划', 'error');
+        showNotification(t('input_error', '输入错误'), t('please_enter_plan', '请输入时间计划'), 'error');
         return;
     }
     
@@ -561,9 +918,9 @@ function generateTable() {
     const tableContainer = document.getElementById('tableContainer');
     
     if (tasks.length === 0) {
-        showNotification('格式错误', '无法解析输入的时间计划，请检查格式是否正确', 'error');
+        showNotification(t('format_error', '格式错误'), t('parsing_error', '无法解析输入的时间计划，请检查格式是否正确'), 'error');
         if (tableContainer.innerHTML === '') {
-            tableContainer.innerHTML = '<div class="empty-state"><i class="bx bx-calendar-x"></i><p>暂无数据</p></div>';
+            tableContainer.innerHTML = `<div class="empty-state"><i class="bx bx-calendar-x"></i><p>${t('no_data', '暂无数据')}</p></div>`;
         }
         return;
     }
@@ -574,7 +931,14 @@ function generateTable() {
     // 创建表头
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    ['星期', '任务', '开始时间', '结束时间', '持续时间'].forEach(text => {
+    [
+        t('day_header', '星期'), 
+        t('task_header', '任务'), 
+        t('start_header', '开始时间'), 
+        t('end_header', '结束时间'), 
+        t('duration_header', '持续时间'), 
+        t('actions_header', '操作')
+    ].forEach(text => {
         const th = document.createElement('th');
         th.textContent = text;
         headerRow.appendChild(th);
@@ -584,8 +948,9 @@ function generateTable() {
     
     // 创建表体
     const tbody = document.createElement('tbody');
-    tasks.forEach(task => {
+    tasks.forEach((task, index) => {
         const row = document.createElement('tr');
+        row.dataset.taskIndex = index; // 添加任务索引，方便后续操作
         
         // 星期
         const dayCell = document.createElement('td');
@@ -614,15 +979,100 @@ function generateTable() {
         durationCell.textContent = task.duration;
         row.appendChild(durationCell);
         
+        // 操作按钮单元格
+        const actionCell = document.createElement('td');
+        actionCell.className = 'task-actions actions-cell';
+        
+        // 创建操作按钮
+        const actionsMenuBtn = document.createElement('button');
+        actionsMenuBtn.className = 'actions-menu-btn';
+        actionsMenuBtn.innerHTML = '<i class="bx bx-dots-vertical-rounded"></i>';
+        actionsMenuBtn.title = t('more_actions', '更多操作');
+        actionsMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // 关闭所有其他菜单
+            document.querySelectorAll('.actions-menu.show').forEach(menu => {
+                if (menu !== actionsMenu) {
+                    menu.classList.remove('show');
+                }
+            });
+            // 切换当前菜单显示状态
+            actionsMenu.classList.toggle('show');
+        });
+        
+        // 创建下拉菜单
+        const actionsMenu = document.createElement('div');
+        actionsMenu.className = 'actions-menu';
+        
+        // 上移操作
+        const moveUpAction = document.createElement('div');
+        moveUpAction.className = 'action-item';
+        moveUpAction.innerHTML = '<i class="bx bx-up-arrow-alt"></i>' + t('move_up', '向上移动');
+        moveUpAction.addEventListener('click', function() {
+            const prevRow = row.previousElementSibling;
+            if (prevRow) {
+                tbody.insertBefore(row, prevRow);
+                updatePlanInputFromTable();
+                generateTable();
+                showNotification(t('operation_success', '操作成功'), t('task_moved_up', '任务已向上移动'), 'success');
+            }
+            actionsMenu.classList.remove('show');
+        });
+        
+        // 下移操作
+        const moveDownAction = document.createElement('div');
+        moveDownAction.className = 'action-item';
+        moveDownAction.innerHTML = '<i class="bx bx-down-arrow-alt"></i>' + t('move_down', '向下移动');
+        moveDownAction.addEventListener('click', function() {
+            const nextRow = row.nextElementSibling;
+            if (nextRow) {
+                tbody.insertBefore(nextRow, row);
+                updatePlanInputFromTable();
+                generateTable();
+                showNotification(t('operation_success', '操作成功'), t('task_moved_down', '任务已向下移动'), 'success');
+            }
+            actionsMenu.classList.remove('show');
+        });
+        
+        // 删除操作
+        const deleteAction = document.createElement('div');
+        deleteAction.className = 'action-item delete-action';
+        deleteAction.innerHTML = '<i class="bx bx-trash-alt"></i>' + t('delete', '删除');
+        deleteAction.addEventListener('click', function() {
+            if (confirm(t('confirm_delete', '确定要删除这个任务吗？'))) {
+                row.remove();
+                updatePlanInputFromTable();
+                generateTable();
+                showNotification(t('delete_success', '删除成功'), t('task_deleted', '任务已删除'), 'success');
+            }
+            actionsMenu.classList.remove('show');
+        });
+        
+        // 添加操作项到菜单
+        actionsMenu.appendChild(moveUpAction);
+        actionsMenu.appendChild(moveDownAction);
+        actionsMenu.appendChild(deleteAction);
+        
+        // 添加按钮和菜单到单元格
+        actionCell.appendChild(actionsMenuBtn);
+        actionCell.appendChild(actionsMenu);
+        row.appendChild(actionCell);
+        
         // 添加冲突标记
         if (task.hasConflict) {
             row.classList.add('conflict');
-            row.title = '警告：此任务与其他任务时间冲突';
+            row.title = t('conflict_warning', '警告：此任务与其他任务时间冲突');
         }
         
         tbody.appendChild(row);
     });
     table.appendChild(tbody);
+    
+    // 移除之前的事件监听器，防止重复添加
+    document.removeEventListener('click', closeAllMenus);
+    
+    // 点击页面任何地方关闭所有菜单
+    document.addEventListener('click', closeAllMenus);
     
     tableContainer.innerHTML = ''; // 这里仍然清空，但我们已经保存了之前的任务
     tableContainer.appendChild(table);
@@ -635,6 +1085,15 @@ function generateTable() {
     
     // 生成甘特图
     generateGanttChart(tasks);
+}
+
+// 全局关闭菜单的函数
+function closeAllMenus(e) {
+    if (!e.target.closest('.actions-cell')) {
+        document.querySelectorAll('.actions-menu.show').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
 }
 
 // 获取已有表格中的任务
@@ -806,14 +1265,16 @@ function generateGanttChart(tasks) {
                 extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); border-radius: 8px; padding: 10px;'
             },
             title: {
-                text: '时间计划甘特图',
+                text: t('gantt_title', '时间计划甘特图'),
                 left: 'center',
                 textStyle: {
                     color: 'var(--text-color)',
                     fontWeight: 'bold',
                     fontSize: 16
                 },
-                subtext: `共 ${tasks.length} 个任务`,
+                subtext: currentLang === 'zh' 
+                    ? `${t('total_tasks', '共')} ${tasks.length} ${t('total_tasks_suffix', '个任务')}`
+                    : `${t('total_tasks', 'Total tasks:')} ${tasks.length}`,
                 subtextStyle: {
                     color: 'var(--text-light)'
                 }
@@ -938,17 +1399,17 @@ function generateGanttChart(tasks) {
             // 创建下载时间表按钮
             const downloadTableBtn = document.createElement('button');
             downloadTableBtn.className = 'download-btn';
-            downloadTableBtn.innerHTML = '<i class="bx bx-download"></i> 下载时间表图片';
+            downloadTableBtn.innerHTML = `<i class="bx bx-download"></i> ${t('download_table', '下载时间表图片')}`;
             downloadTableBtn.onclick = function() {
-                captureElement('tableContainer', '时间计划表');
+                captureElement('tableContainer', t('table_filename', '时间计划表'));
             };
             
             // 创建下载甘特图按钮
             const downloadGanttBtn = document.createElement('button');
             downloadGanttBtn.className = 'download-btn';
-            downloadGanttBtn.innerHTML = '<i class="bx bx-download"></i> 下载甘特图图片';
+            downloadGanttBtn.innerHTML = `<i class="bx bx-download"></i> ${t('download_gantt', '下载甘特图图片')}`;
             downloadGanttBtn.onclick = function() {
-                captureElement('ganttContainer', '时间计划甘特图');
+                captureElement('ganttContainer', t('gantt_filename', '时间计划甘特图'));
             };
             
             // 添加按钮到容器
@@ -978,18 +1439,18 @@ function generateGanttChart(tasks) {
 function captureElement(elementId, fileName) {
     const element = document.getElementById(elementId);
     if (!element) {
-        showNotification('截图失败', '找不到要截图的元素', 'error');
+        showNotification(t('screenshot_failed', '截图失败'), t('element_not_found', '找不到要截图的元素'), 'error');
         return;
     }
     
     // 检查是否加载了html2canvas库
     if (typeof html2canvas !== 'function') {
-        showNotification('截图失败', '未找到html2canvas库，请检查是否正确加载', 'error');
+        showNotification(t('screenshot_failed', '截图失败'), t('library_not_found', '未找到html2canvas库，请检查是否正确加载'), 'error');
         loadHtml2Canvas(); // 尝试动态加载库
         return;
     }
     
-    showNotification('正在处理', '正在生成图片，请稍候...', 'success');
+    showNotification(t('processing', '正在处理'), t('generating_image', '正在生成图片，请稍候...'), 'success');
     
     html2canvas(element, {
         backgroundColor: '#ffffff',
@@ -1005,10 +1466,10 @@ function captureElement(elementId, fileName) {
         link.download = fileName + '.png';
         link.click();
         
-        showNotification('下载成功', '图片已成功生成并下载', 'success');
+        showNotification(t('download_success', '下载成功'), t('image_generated', '图片已成功生成并下载'), 'success');
     }).catch(function(error) {
         console.error('截图错误:', error);
-        showNotification('截图失败', error.message, 'error');
+        showNotification(t('screenshot_failed', '截图失败'), error.message, 'error');
     });
 }
 

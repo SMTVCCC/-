@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI智能时间计划表 | 高效管理您的时间</title>
+    <title>AI Smart Time Scheduler | Efficiently Manage Your Time</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="description" content="智能时间计划表 - 轻松管理您的时间，自动生成表格和甘特图，支持AI辅助输入">
+    <meta name="description" content="Smart Time Scheduler - Easily manage your time, automatically generate tables and Gantt charts, with AI-assisted input">
     
     <!-- 加密库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -21,37 +21,42 @@
 <body>
     <div class="container">
         <header>
+            <div class="language-switcher">
+                <button id="langToggle" class="lang-btn" title="切换语言/Switch Language">
+                    <i class='bx bx-globe'></i> <span id="langText">中文</span>
+                </button>
+            </div>
             <h1>
-                <i class='bx bx-time-five'></i> AI智能时间计划表
-                <span class="subtitle">高效管理您的时间</span>
+                <i class='bx bx-time-five'></i> <span data-i18n="title">AI Smart Time Scheduler</span>
+                <span class="subtitle" data-i18n="subtitle">Smitty Heple You Efficiently Manage Your Time</span>
             </h1>
         </header>
         
         <div id="inputArea" class="card">
             <div class="input-tabs">
                 <button class="tab-btn active" data-tab="freeform-input">
-                    <i class='bx bx-edit'></i> 自由输入
+                    <i class='bx bx-edit'></i> <span data-i18n="freeform_tab">Free Input</span>
                 </button>
                 <button class="tab-btn" data-tab="structured-input">
-                    <i class='bx bx-list-ul'></i> 结构化输入
+                    <i class='bx bx-list-ul'></i> <span data-i18n="structured_tab">Structured Input</span>
                 </button>
             </div>
             
             <div id="freeform-input" class="tab-content active">
                 <div class="ai-input-container">
-                    <textarea id="planInput" placeholder="输入时间计划（示例：周一 10:00-12:00 写代码）"></textarea>
-                    <button id="aiAssistBtn" class="ai-assist-btn" title="AI辅助输入">
+                    <textarea id="planInput" data-i18n-placeholder="plan_input_placeholder" placeholder="Enter time schedule (Example: Monday 10:00-12:00 Coding)"></textarea>
+                    <button id="aiAssistBtn" class="ai-assist-btn" data-i18n-title="ai_assist_btn" title="AI-assisted Input">
                         <i class='bx bx-bot'></i>
                     </button>
                 </div>
                 <div class="input-tips">
                     <div class="tip-header">
-                        <i class='bx bx-info-circle'></i> 输入提示
+                        <i class='bx bx-info-circle'></i> <span data-i18n="input_tips_header">Input Tips</span>
                     </div>
                     <ul class="tip-list">
-                        <li><strong>标准格式:</strong> 周一 10:00-12:00 写代码</li>
-                        <li><strong>分隔符格式:</strong> 写代码 | 周一 | 10:00-12:00</li>
-                        <li><strong>任务优先格式:</strong> 写代码 10:00-12:00 周一</li>
+                        <li><strong data-i18n="standard_format">Standard Format:</strong> <span data-i18n="standard_format_example">Monday 10:00-12:00 Coding</span></li>
+                        <li><strong data-i18n="separator_format">Separator Format:</strong> <span data-i18n="separator_format_example">Coding | Monday | 10:00-12:00</span></li>
+                        <li><strong data-i18n="task_priority_format">Task Priority Format:</strong> <span data-i18n="task_priority_format_example">Coding 10:00-12:00 Monday</span></li>
                     </ul>
                 </div>
             </div>
@@ -61,48 +66,48 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="daySelect">
-                                <i class='bx bx-calendar'></i> 星期
+                                <i class='bx bx-calendar'></i> <span data-i18n="day_label">Day</span>
                             </label>
                             <select id="daySelect" required>
-                                <option value="">请选择</option>
-                                <option value="周一">周一</option>
-                                <option value="周二">周二</option>
-                                <option value="周三">周三</option>
-                                <option value="周四">周四</option>
-                                <option value="周五">周五</option>
-                                <option value="周六">周六</option>
-                                <option value="周日">周日</option>
+                                <option value="" data-i18n="please_select">Please select</option>
+                                <option value="Monday" data-i18n="monday">Monday</option>
+                                <option value="Tuesday" data-i18n="tuesday">Tuesday</option>
+                                <option value="Wednesday" data-i18n="wednesday">Wednesday</option>
+                                <option value="Thursday" data-i18n="thursday">Thursday</option>
+                                <option value="Friday" data-i18n="friday">Friday</option>
+                                <option value="Saturday" data-i18n="saturday">Saturday</option>
+                                <option value="Sunday" data-i18n="sunday">Sunday</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
                             <label for="startTime">
-                                <i class='bx bx-time'></i> 开始时间
+                                <i class='bx bx-time'></i> <span data-i18n="start_time">Start Time</span>
                             </label>
                             <input type="time" id="startTime" required>
                         </div>
                         
                         <div class="form-group">
                             <label for="endTime">
-                                <i class='bx bx-time-five'></i> 结束时间
+                                <i class='bx bx-time-five'></i> <span data-i18n="end_time">End Time</span>
                             </label>
                             <input type="time" id="endTime" required>
                         </div>
                         
                         <div class="form-group">
                             <label for="taskName">
-                                <i class='bx bx-task'></i> 任务名称
+                                <i class='bx bx-task'></i> <span data-i18n="task_name">Task Name</span>
                             </label>
-                            <input type="text" id="taskName" placeholder="例如：写代码" required>
+                            <input type="text" id="taskName" data-i18n-placeholder="task_name_placeholder" placeholder="Example: Coding" required>
                         </div>
                     </div>
                     
                     <button id="addTaskBtn">
-                        <i class='bx bx-plus'></i> 添加任务
+                        <i class='bx bx-plus'></i> <span data-i18n="add_task">Add Task</span>
                     </button>
                     
                     <div class="task-list-container">
-                        <h3><i class='bx bx-list-check'></i> 已添加的任务</h3>
+                        <h3><i class='bx bx-list-check'></i> <span data-i18n="added_tasks">Added Tasks</span></h3>
                         <ul id="taskList"></ul>
                     </div>
                 </div>
@@ -110,13 +115,13 @@
             
             <div class="button-group">
                 <button id="generateBtn" onclick="generateTable()">
-                    <i class='bx bx-table'></i> 生成表格
+                    <i class='bx bx-table'></i> <span data-i18n="generate_table">Generate Table</span>
                 </button>
                 <button id="exportBtn" onclick="exportToExcel()" disabled>
-                    <i class='bx bx-export'></i> 导出Excel
+                    <i class='bx bx-export'></i> <span data-i18n="export_excel">Export Excel</span>
                 </button>
                 <button id="clearBtn" onclick="clearAll()">
-                    <i class='bx bx-trash'></i> 清除
+                    <i class='bx bx-trash'></i> <span data-i18n="clear">Clear</span>
                 </button>
             </div>
         </div>
@@ -125,8 +130,8 @@
         <div id="ganttContainer" class="card"></div>
         
         <footer>
-            <p><strong style="color: var(--secondary-color);">AI技术由SMT自研大模型Smitty提供支持。问题联系：smtoffice@163.com</strong></p>
-            <p>版权所有 © 2025 Vincent。保留所有权利。未经作者事先书面许可，不得以任何形式或方式复制、分发或传播本作品的任何部分</p>
+            <p><strong style="color: var(--secondary-color);" data-i18n="ai_powered">AI powered by SMT self-developed large model Smitty. Contact: smtoffice@163.com</strong></p>
+            <p data-i18n="copyright">Copyright © 2025 Vincent. All rights reserved. No part of this work may be reproduced, distributed, or transmitted in any form or by any means without the prior written permission of the author</p>
         </footer>
     </div>
 
@@ -134,34 +139,34 @@
     <div id="aiInputModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2><i class='bx bx-bot'></i> AI辅助输入</h2>
-            <p>请用自然语言描述您的时间计划，AI将帮您转换为标准格式</p>
+            <h2><i class='bx bx-bot'></i> <span data-i18n="ai_assist_title">AI-assisted Input</span></h2>
+            <p data-i18n="ai_assist_description">Please describe your time schedule in natural language, and the AI will help you convert it to the standard format</p>
             
             <div class="ai-tips">
                 <div class="tip-header">
-                    <i class='bx bx-bulb'></i> 输入示例
+                    <i class='bx bx-bulb'></i> <span data-i18n="input_examples">Input Examples</span>
                 </div>
                 <ul class="tip-list">
-                    <li>"给我一个一周的详细计划"</li>
-                    <li>"星期二早上9点到11点30分学习，下午3点到5点健身"</li>
-                    <li>"我想在周三晚上7点到9点看电影"</li>
+                    <li data-i18n="example_1">"Give me a detailed schedule for a week"</li>
+                    <li data-i18n="example_2">"Study from 9 AM to 11:30 AM on Tuesday, and workout from 3 PM to 5 PM"</li>
+                    <li data-i18n="example_3">"I want to watch a movie on Wednesday from 7 PM to 9 PM"</li>
                 </ul>
             </div>
             
-            <textarea id="aiInputText" placeholder="例如：我想在周一上午10点到12点写代码，然后下午2点到4点开会..."></textarea>
+            <textarea id="aiInputText" data-i18n-placeholder="ai_input_placeholder" placeholder="Example: I want to code from 10 AM to 12 PM on Monday, and then have a meeting from 2 PM to 4 PM..."></textarea>
             
             <div id="aiLoading" class="ai-loading">
                 <div class="spinner"></div>
-                <p>AI正在处理中...</p>
+                <p data-i18n="ai_processing">AI is processing...</p>
             </div>
             
             <div id="aiResult" class="ai-result"></div>
             
             <div class="modal-buttons">
                 <button id="aiConvertBtn">
-                    <i class='bx bx-transfer'></i> 转换
+                    <i class='bx bx-transfer'></i> <span data-i18n="convert">Convert</span>
                 </button>
-                <button id="aiCancelBtn">取消</button>
+                <button id="aiCancelBtn" data-i18n="cancel">Cancel</button>
             </div>
         </div>
     </div>
